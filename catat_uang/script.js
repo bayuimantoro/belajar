@@ -19,12 +19,18 @@ document.addEventListener('DOMContentLoaded', () => {
     const themeSelect = document.getElementById('theme-select');
     const categoryFilterEl = document.getElementById('category-filter');
     const html = document.documentElement;
+    // BARU: Elemen untuk grafik dan view switcher
+    const showBalanceBtn = document.getElementById('show-balance-btn');
+    const showChartBtn = document.getElementById('show-chart-btn');
+    const balanceView = document.getElementById('balance-view');
+    const chartView = document.getElementById('chart-view');
 
     // === APP STATE ===
     let transactions = JSON.parse(localStorage.getItem('transactions_v2')) || [];
     let currentWallet = localStorage.getItem('activeWallet_v2') || 'tunai';
     let currentFilter = 'all';
     let editingID = null;
+    let expenseChart = null; // BARU: Variabel untuk menyimpan instance grafik
 
     // === CONFIGURATION ===
     const categories = {
@@ -52,10 +58,12 @@ document.addEventListener('DOMContentLoaded', () => {
         renderTransactions();
         updateBalanceAndSummary();
         populateCategoryFilter();
+        renderExpenseChart(); // MODIFIKASI: Panggil fungsi render grafik
     }
 
-    // Renders the transaction list
+    // Renders the transaction list (Sama seperti sebelumnya)
     function renderTransactions() {
+        // ... kode sama ...
         transactionListEl.innerHTML = '';
         
         let filteredTransactions = transactions
@@ -82,8 +90,9 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // Adds a single transaction item to the DOM
+    // Adds a single transaction item to the DOM (Sama seperti sebelumnya)
     function addTransactionToDOM(transaction) {
+        // ... kode sama ...
         const type = transaction.amount > 0 ? 'income' : 'expense';
         const category = findCategory(transaction.category, type);
 
@@ -108,8 +117,9 @@ document.addEventListener('DOMContentLoaded', () => {
         transactionListEl.appendChild(item);
     }
     
-    // Handles form submission for both adding and editing
+    // Handles form submission (Sama, karena sudah memanggil init())
     function handleFormSubmit(e) {
+        // ... kode sama ...
         e.preventDefault();
         
         const type = document.querySelector('input[name="transaction-type"]:checked').value;
@@ -123,12 +133,10 @@ document.addEventListener('DOMContentLoaded', () => {
         };
 
         if (editingID) {
-            // Update existing transaction
             const index = transactions.findIndex(t => t.id === editingID);
-            const originalDate = transactions[index].date; // Keep original date
+            const originalDate = transactions[index].date;
             transactions[index] = { ...transactions[index], ...transactionData, date: originalDate };
         } else {
-            // Add new transaction
             transactions.push({ ...transactionData, id: generateID() });
         }
         
@@ -137,8 +145,9 @@ document.addEventListener('DOMContentLoaded', () => {
         init();
     }
     
-    // Updates balance card
+    // Updates balance card (Sama seperti sebelumnya)
     function updateBalanceAndSummary() {
+        // ... kode sama ...
         const walletTransactions = transactions.filter(t => t.wallet === currentWallet);
         const amounts = walletTransactions.map(t => t.amount);
         
@@ -155,9 +164,67 @@ document.addEventListener('DOMContentLoaded', () => {
         totalExpenseEl.dataset.currentValue = expense;
     }
 
+    // BARU: Fungsi untuk merender atau memperbarui grafik pengeluaran
+    function renderExpenseChart() {
+        const walletTransactions = transactions.filter(t => t.wallet === currentWallet);
+        const expenseData = walletTransactions
+            .filter(t => t.amount < 0)
+            .reduce((acc, t) => {
+                const categoryInfo = findCategory(t.category, 'expense');
+                acc[categoryInfo.text] = (acc[categoryInfo.text] || 0) + Math.abs(t.amount);
+                return acc;
+            }, {});
+
+        const labels = Object.keys(expenseData);
+        const data = Object.values(expenseData);
+
+        if (expenseChart) {
+            expenseChart.destroy();
+        }
+
+        const chartWrapper = chartView.querySelector('.chart-wrapper');
+        if (labels.length === 0) {
+            chartWrapper.innerHTML = '<p style="text-align:center; color: var(--text-secondary-color); padding-top: 50px;">Tidak ada data pengeluaran untuk ditampilkan.</p>';
+            return;
+        } else {
+            chartWrapper.innerHTML = '<canvas id="expense-chart"></canvas>';
+        }
+
+        const chartColors = ['#e74c3c', '#3498db', '#9b59b6', '#f1c40f', '#2ecc71', '#e67e22', '#1abc9c'];
+
+        expenseChart = new Chart(document.getElementById('expense-chart').getContext('2d'), {
+            type: 'doughnut',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Pengeluaran',
+                    data: data,
+                    backgroundColor: chartColors,
+                    borderColor: 'var(--panel-bg-color)',
+                    borderWidth: 3
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: {
+                            color: 'var(--text-color)',
+                            font: { family: "'Poppins', sans-serif" }
+                        }
+                    }
+                }
+            }
+        });
+    }
+
     // === HELPER & UI FUNCTIONS ===
 
+    // ... (Fungsi prepareEditTransaction dan confirmRemoveTransaction sama, karena sudah memanggil init()) ...
     window.prepareEditTransaction = (id) => {
+        // ... kode sama ...
         editingID = id;
         const transaction = transactions.find(t => t.id === id);
         
@@ -183,6 +250,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
+    // ... (Fungsi switchWallet sama, karena sudah memanggil init()) ...
     function switchWallet(e) {
         if (e.target.classList.contains('wallet-btn')) {
             currentWallet = e.target.dataset.wallet;
@@ -191,6 +259,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
     
+    // ... (Fungsi UI lainnya sama) ...
     function updateWalletUI() {
         document.querySelectorAll('.wallet-btn').forEach(btn => btn.classList.remove('active'));
         const activeBtn = document.querySelector(`.wallet-btn[data-wallet="${currentWallet}"]`);
@@ -198,14 +267,12 @@ document.addEventListener('DOMContentLoaded', () => {
         balanceTitleEl.innerText = `SALDO ${currentWallet.toUpperCase()}`;
     }
 
-    function openModal() {
-        modalContainer.classList.add('show');
-    }
+    function openModal() { modalContainer.classList.add('show'); }
 
     function closeModal() {
         modalContainer.classList.remove('show');
         form.reset();
-        populateCategoryOptions('income'); // Reset to default
+        populateCategoryOptions('income');
         editingID = null;
         formTitle.innerText = 'Tambah Transaksi Baru';
         transactionIdInput.value = '';
@@ -240,8 +307,23 @@ document.addEventListener('DOMContentLoaded', () => {
         themeSelect.value = savedTheme;
     }
 
+    // BARU: Fungsi untuk beralih antara tampilan Saldo dan Grafik
+    function switchSummaryView(viewToShow) {
+        if (viewToShow === 'chart') {
+            balanceView.classList.remove('active');
+            chartView.classList.add('active');
+            showBalanceBtn.classList.remove('active');
+            showChartBtn.classList.add('active');
+        } else {
+            chartView.classList.remove('active');
+            balanceView.classList.add('active');
+            showChartBtn.classList.remove('active');
+            showBalanceBtn.classList.add('active');
+        }
+    }
+
     // === UTILITY FUNCTIONS ===
-    
+    // ... (Semua fungsi utility sama) ...
     const findCategory = (id, type) => categories[type].find(c => c.id === id) || { text: 'N/A', icon: 'fa-question-circle' };
     const generateID = () => Math.floor(Math.random() * 1000000000);
     const formatMoney = (number) => new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(number);
@@ -290,6 +372,9 @@ document.addEventListener('DOMContentLoaded', () => {
     document.querySelectorAll('input[name="transaction-type"]').forEach(radio => {
         radio.addEventListener('change', (e) => populateCategoryOptions(e.target.value));
     });
+    // BARU: Event listener untuk tombol view switcher
+    showBalanceBtn.addEventListener('click', () => switchSummaryView('balance'));
+    showChartBtn.addEventListener('click', () => switchSummaryView('chart'));
 
     // === INITIALIZATION ===
     loadInitialTheme();
