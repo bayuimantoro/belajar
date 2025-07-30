@@ -11,105 +11,77 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
 </head>
 <body>
-
-    <div class="app-container">
-        <!-- KOLOM KIRI (Info & Aksi) -->
-        <aside class="left-panel">
-            <header>
-                <h2>Catatan Keuangan</h2>
-                <div class="theme-selector">
-                    <select id="theme-select">
-                        <option value="light">Light</option>
-                        <option value="dark">Dark</option>
-                        <option value="ocean">Ocean</option>
-                    </select>
-                </div>
-            </header>
-
-            <div class="wallet-switcher">
-                <button id="btn-tunai" class="wallet-btn active" data-wallet="tunai"><i class="fas fa-wallet"></i> Tunai</button>
-                <button id="btn-bank" class="wallet-btn" data-wallet="bank"><i class="fas fa-university"></i> Bank</button>
-            </div>
-
-            <section class="balance-card">
-                <h4 id="balance-title">SALDO TUNAI</h4>
-                <h1 id="balance">Rp 0,00</h1>
-                <div class="summary">
-                    <div class="income-summary">
-                        <p><i class="fas fa-arrow-up"></i> PEMASUKAN</p>
-                        <h3 id="total-income" class="money plus">Rp 0,00</h3>
+    <div id="app-wrapper">
+        <div class="app-container">
+            <!-- Kolom Kiri -->
+            <aside class="left-panel">
+                <header>
+                    <h2>Catatan Keuangan</h2>
+                    <div class="header-actions">
+                        <!-- BARU: Tombol Pengaturan -->
+                        <button id="settings-btn" class="settings-btn"><i class="fas fa-cog"></i></button>
+                        <div class="theme-selector"><select id="theme-select"><option value="light">Light</option><option value="dark">Dark</option><option value="ocean">Ocean</option></select></div>
                     </div>
-                    <div class="expense-summary">
-                        <p><i class="fas fa-arrow-down"></i> PENGELUARAN</p>
-                        <h3 id="total-expense" class="money minus">Rp 0,00</h3>
+                </header>
+                <div class="wallet-switcher">
+                    <button id="btn-tunai" class="wallet-btn active" data-wallet="tunai"><i class="fas fa-wallet"></i> Tunai</button>
+                    <button id="btn-bank" class="wallet-btn" data-wallet="bank"><i class="fas fa-university"></i> Bank</button>
+                </div>
+                <section class="balance-card">
+                    <h4 id="balance-title">SALDO TUNAI</h4>
+                    <h1 id="balance">Rp 0,00</h1>
+                    <div class="summary">
+                        <div class="income-summary"><p><i class="fas fa-arrow-up"></i> PEMASUKAN</p><h3 id="total-income" class="money plus">Rp 0,00</h3></div>
+                        <div class="expense-summary"><p><i class="fas fa-arrow-down"></i> PENGELUARAN</p><h3 id="total-expense" class="money minus">Rp 0,00</h3></div>
+                    </div>
+                </section>
+                <section class="chart-container">
+                    <h3>Ringkasan Visual</h3>
+                    <div class="charts-wrapper">
+                        <div class="chart-box"><h4>Pengeluaran</h4><canvas id="expense-chart"></canvas><p id="chart-empty-message-expense" class="chart-empty-message" style="display: none;">Data kosong</p></div>
+                        <div class="chart-box"><h4>Pemasukan</h4><canvas id="income-chart"></canvas><p id="chart-empty-message-income" class="chart-empty-message" style="display: none;">Data kosong</p></div>
+                    </div>
+                </section>
+            </aside>
+            <!-- Kolom Kanan -->
+            <main class="right-panel">
+                <div class="history-header">
+                    <h3>Riwayat Transaksi</h3>
+                    <div class="filters-wrapper">
+                        <!-- BARU: Search Bar -->
+                        <div class="search-container">
+                            <i class="fas fa-search"></i>
+                            <input type="search" id="search-input" placeholder="Cari transaksi...">
+                        </div>
+                        <div class="date-filter-container">
+                            <input type="date" id="start-date"><span>-</span><input type="date" id="end-date">
+                            <button id="reset-date-filter" class="action-btn"><i class="fas fa-times-circle"></i></button>
+                        </div>
+                        <div class="filter-container">
+                            <label for="category-filter"><i class="fas fa-filter"></i></label>
+                            <select id="category-filter"><option value="all">Semua Kategori</option></select>
+                        </div>
                     </div>
                 </div>
-            </section>
-        </aside>
-
-        <!-- KOLOM KANAN (Riwayat) -->
-        <main class="right-panel">
-            <div class="history-header">
-                <h3>Riwayat Transaksi</h3>
-                <div class="filter-container">
-                    <label for="category-filter"><i class="fas fa-filter"></i></label>
-                    <select id="category-filter">
-                        <option value="all">Semua Kategori</option>
-                        <!-- Opsi kategori ditambahkan oleh JS -->
-                    </select>
-                </div>
-            </div>
-            <ul id="transaction-list" class="transaction-list">
-                <!-- Data diisi oleh JavaScript -->
-            </ul>
-            <div id="empty-state" class="empty-state" style="display: none;">
-                <i class="fas fa-inbox"></i>
-                <p>Belum ada transaksi</p>
-                <span>Mulai catat keuanganmu sekarang!</span>
-            </div>
-        </main>
-    </div>
-
-    <!-- FLOATING ACTION BUTTON (FAB) -->
-    <button id="fab" class="fab"><i class="fas fa-plus"></i></button>
-
-    <!-- MODAL UNTUK FORM -->
-    <div id="modal-container" class="modal-container">
-        <div class="modal-content">
-            <button id="close-modal" class="close-modal">×</button>
-            <h3 id="form-title">Tambah Transaksi Baru</h3>
-            <form id="form">
-                <!-- Hidden input untuk menyimpan ID saat mengedit -->
-                <input type="hidden" id="transaction-id">
-                
-                <div class="form-control">
-                    <label for="text">Deskripsi</label>
-                    <input type="text" id="text" placeholder="Contoh: Makan siang" required>
-                </div>
-
-                <div class="form-control">
-                    <label for="amount">Jumlah (Rp)</label>
-                    <input type="number" id="amount" placeholder="Contoh: 25000" required inputmode="numeric">
-                </div>
-                
-                <div class="form-control">
-                    <label for="category">Kategori</label>
-                    <select id="category" required>
-                         <!-- Opsi kategori ditambahkan oleh JS -->
-                    </select>
-                </div>
-
-                <div class="form-control radio-group">
-                    <input type="radio" id="income-radio" name="transaction-type" value="income" checked>
-                    <label for="income-radio">Pemasukan</label>
-                    <input type="radio" id="expense-radio" name="transaction-type" value="expense">
-                    <label for="expense-radio">Pengeluaran</label>
-                </div>
-                <button class="btn">Simpan Transaksi</button>
-            </form>
+                <ul id="transaction-list" class="transaction-list"></ul>
+                <div id="empty-state" class="empty-state" style="display: none;"><i class="fas fa-inbox"></i><p>Belum ada transaksi</p><span>Mulai catat keuanganmu sekarang!</span></div>
+            </main>
         </div>
     </div>
+    <div class="action-buttons-group">
+        <button id="transfer-fab" class="fab mini-fab"><i class="fas fa-exchange-alt"></i></button>
+        <button id="fab" class="fab"><i class="fas fa-plus"></i></button>
+    </div>
+    
+    <!-- Modal dan lainnya -->
+    <div id="modal-container" class="modal-container"></div>
+    <div id="transfer-modal-container" class="modal-container"></div>
+    <!-- BARU: Modal Pengaturan -->
+    <div id="settings-modal-container" class="modal-container"></div>
+    <!-- BARU: Layar Kunci PIN -->
+    <div id="pin-lock-container" class="pin-lock-screen"></div>
 
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="script.js"></script>
 </body>
 </html>
