@@ -3,78 +3,111 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ivy Wallet Clone - Catatan Keuangan</title>
+    <title>Ivy Wallet Pro - Catatan Keuangan</title>
     <link rel="stylesheet" href="style.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
 </head>
 <body>
 
-    <div class="container">
-        <!-- HEADER -->
-        <header>
-            <h2>Catatan Keuangan</h2>
-            <button id="theme-toggle" class="theme-toggle">
-                <i class="fas fa-moon"></i>
-            </button>
-        </header>
+    <div class="app-container">
+        <!-- KOLOM KIRI (Info & Aksi) -->
+        <aside class="left-panel">
+            <header>
+                <h2>Catatan Keuangan</h2>
+                <div class="theme-selector">
+                    <select id="theme-select">
+                        <option value="light">Light</option>
+                        <option value="dark">Dark</option>
+                        <option value="ocean">Ocean</option>
+                    </select>
+                </div>
+            </header>
 
-        <!-- BARU: TOMBOL PEMILIH DOMPET -->
-        <div class="wallet-switcher">
-            <button id="btn-tunai" class="wallet-btn active" data-wallet="tunai">Dompet Tunai</button>
-            <button id="btn-bank" class="wallet-btn" data-wallet="bank">Rekening Bank</button>
-        </div>
+            <div class="wallet-switcher">
+                <button id="btn-tunai" class="wallet-btn active" data-wallet="tunai"><i class="fas fa-wallet"></i> Tunai</button>
+                <button id="btn-bank" class="wallet-btn" data-wallet="bank"><i class="fas fa-university"></i> Bank</button>
+            </div>
 
-        <main>
-            <!-- KARTU SALDO -->
             <section class="balance-card">
-                <!-- MODIFIKASI: Judul saldo menjadi dinamis -->
                 <h4 id="balance-title">SALDO TUNAI</h4>
                 <h1 id="balance">Rp 0,00</h1>
                 <div class="summary">
                     <div class="income-summary">
-                        <p>PEMASUKAN</p>
+                        <p><i class="fas fa-arrow-up"></i> PEMASUKAN</p>
                         <h3 id="total-income" class="money plus">Rp 0,00</h3>
                     </div>
                     <div class="expense-summary">
-                        <p>PENGELUARAN</p>
+                        <p><i class="fas fa-arrow-down"></i> PENGELUARAN</p>
                         <h3 id="total-expense" class="money minus">Rp 0,00</h3>
                     </div>
                 </div>
             </section>
+        </aside>
 
-            <!-- RIWAYAT TRANSAKSI -->
-            <section class="history">
+        <!-- KOLOM KANAN (Riwayat) -->
+        <main class="right-panel">
+            <div class="history-header">
                 <h3>Riwayat Transaksi</h3>
-                <ul id="transaction-list" class="transaction-list">
-                    <!-- Data diisi oleh JavaScript -->
-                </ul>
-            </section>
-
-            <!-- FORM TAMBAH TRANSAKSI -->
-            <section class="add-transaction">
-                <h3>Tambah Transaksi Baru</h3>
-                <form id="form">
-                    <div class="form-control">
-                        <label for="text">Deskripsi</label>
-                        <input type="text" id="text" placeholder="Masukkan deskripsi...">
-                    </div>
-                    <div class="form-control">
-                        <label for="amount">Jumlah (Rp)</label>
-                        <input type="number" id="amount" placeholder="Masukkan jumlah...">
-                    </div>
-                    <div class="form-control radio-group">
-                        <input type="radio" id="income-radio" name="transaction-type" value="income" checked>
-                        <label for="income-radio">Pemasukan</label>
-                        <input type="radio" id="expense-radio" name="transaction-type" value="expense">
-                        <label for="expense-radio">Pengeluaran</label>
-                    </div>
-                    <button class="btn">Tambah Transaksi</button>
-                </form>
-            </section>
+                <div class="filter-container">
+                    <label for="category-filter"><i class="fas fa-filter"></i></label>
+                    <select id="category-filter">
+                        <option value="all">Semua Kategori</option>
+                        <!-- Opsi kategori ditambahkan oleh JS -->
+                    </select>
+                </div>
+            </div>
+            <ul id="transaction-list" class="transaction-list">
+                <!-- Data diisi oleh JavaScript -->
+            </ul>
+            <div id="empty-state" class="empty-state" style="display: none;">
+                <i class="fas fa-inbox"></i>
+                <p>Belum ada transaksi</p>
+                <span>Mulai catat keuanganmu sekarang!</span>
+            </div>
         </main>
+    </div>
+
+    <!-- FLOATING ACTION BUTTON (FAB) -->
+    <button id="fab" class="fab"><i class="fas fa-plus"></i></button>
+
+    <!-- MODAL UNTUK FORM -->
+    <div id="modal-container" class="modal-container">
+        <div class="modal-content">
+            <button id="close-modal" class="close-modal">×</button>
+            <h3 id="form-title">Tambah Transaksi Baru</h3>
+            <form id="form">
+                <!-- Hidden input untuk menyimpan ID saat mengedit -->
+                <input type="hidden" id="transaction-id">
+                
+                <div class="form-control">
+                    <label for="text">Deskripsi</label>
+                    <input type="text" id="text" placeholder="Contoh: Makan siang" required>
+                </div>
+
+                <div class="form-control">
+                    <label for="amount">Jumlah (Rp)</label>
+                    <input type="number" id="amount" placeholder="Contoh: 25000" required inputmode="numeric">
+                </div>
+                
+                <div class="form-control">
+                    <label for="category">Kategori</label>
+                    <select id="category" required>
+                         <!-- Opsi kategori ditambahkan oleh JS -->
+                    </select>
+                </div>
+
+                <div class="form-control radio-group">
+                    <input type="radio" id="income-radio" name="transaction-type" value="income" checked>
+                    <label for="income-radio">Pemasukan</label>
+                    <input type="radio" id="expense-radio" name="transaction-type" value="expense">
+                    <label for="expense-radio">Pengeluaran</label>
+                </div>
+                <button class="btn">Simpan Transaksi</button>
+            </form>
+        </div>
     </div>
 
     <script src="script.js"></script>
