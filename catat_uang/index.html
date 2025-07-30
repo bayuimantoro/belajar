@@ -5,11 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Ivy Wallet Clone - Catatan Keuangan</title>
     <link rel="stylesheet" href="style.css">
-    <!-- Google Fonts untuk tampilan yang lebih modern -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
-    <!-- Icon untuk tombol tema -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
@@ -23,10 +21,17 @@
             </button>
         </header>
 
+        <!-- BARU: TOMBOL PEMILIH DOMPET -->
+        <div class="wallet-switcher">
+            <button id="btn-tunai" class="wallet-btn active" data-wallet="tunai">Dompet Tunai</button>
+            <button id="btn-bank" class="wallet-btn" data-wallet="bank">Rekening Bank</button>
+        </div>
+
         <main>
             <!-- KARTU SALDO -->
             <section class="balance-card">
-                <h4>SALDO ANDA</h4>
+                <!-- MODIFIKASI: Judul saldo menjadi dinamis -->
+                <h4 id="balance-title">SALDO TUNAI</h4>
                 <h1 id="balance">Rp 0,00</h1>
                 <div class="summary">
                     <div class="income-summary">
@@ -44,17 +49,7 @@
             <section class="history">
                 <h3>Riwayat Transaksi</h3>
                 <ul id="transaction-list" class="transaction-list">
-                    <!-- Contoh item transaksi akan ditambahkan oleh JavaScript -->
-                    <!-- <li class="expense">
-                        <span>Beli Kopi</span>
-                        <span>-Rp 25.000</span>
-                        <button class="delete-btn">x</button>
-                    </li>
-                    <li class="income">
-                        <span>Gaji Bulanan</span>
-                        <span>+Rp 5.000.000</span>
-                        <button class="delete-btn">x</button>
-                    </li> -->
+                    <!-- Data diisi oleh JavaScript -->
                 </ul>
             </section>
 
