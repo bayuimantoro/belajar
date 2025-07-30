@@ -19,8 +19,6 @@
     --success-color: #2ecc71;
     --danger-color: #e74c3c;
     --fab-color: var(--primary-color);
-    --income-text-color: var(--success-color); /* MODIFIKASI */
-    --expense-text-color: var(--danger-color); /* MODIFIKASI */
 }
 
 [data-theme="dark"] {
@@ -35,8 +33,6 @@
     --success-color: #27ae60;
     --danger-color: #c0392b;
     --fab-color: #e94560;
-    --income-text-color: var(--success-color); /* MODIFIKASI */
-    --expense-text-color: var(--danger-color); /* MODIFIKASI */
 }
 
 [data-theme="ocean"] {
@@ -51,8 +47,6 @@
     --success-color: #4caf50;
     --danger-color: #f44336;
     --fab-color: var(--primary-color);
-    --income-text-color: var(--success-color); /* MODIFIKASI */
-    --expense-text-color: var(--danger-color); /* MODIFIKASI */
 }
 
 /* --- STYLE DASAR --- */
@@ -78,11 +72,9 @@ body {
         flex-direction: row;
         gap: 30px;
         padding: 30px;
-        max-width: 1400px; /* MODIFIKASI: Batasi lebar maksimum untuk layar sangat besar */
-        margin: 0 auto;    /* MODIFIKASI: Pusatkan container */
     }
     .left-panel {
-        width: 400px; /* MODIFIKASI: Sedikit lebih lebar */
+        width: 380px;
         flex-shrink: 0;
         padding-bottom: 0;
     }
@@ -101,8 +93,6 @@ select {
     border-radius: var(--border-radius-sm);
     padding: 5px 10px;
     font-family: 'Poppins', sans-serif;
-    cursor: pointer; /* MODIFIKASI */
-    transition: all var(--transition-speed); /* MODIFIKASI */
 }
 
 /* --- PEMILIH DOMPET --- */
@@ -117,15 +107,16 @@ select {
 .wallet-btn i { margin-right: 8px; }
 .wallet-btn.active { background-color: var(--primary-color); color: #fff; border-color: var(--primary-color); }
 .wallet-btn:not(.active):hover { background-color: var(--bg-color); }
-.wallet-btn:active { transform: scale(0.98); } /* MODIFIKASI: Feedback saat diklik */
 
-/* --- KARTU SALDO --- (Digabung dengan .summary-container) --- */
-/* (Tidak ada perubahan di sini, sudah benar) */
+/* --- KARTU SALDO --- */
+.balance-card {
+    transition: background-color var(--transition-speed);
+}
 .balance-card h1 { font-size: 2.2rem; margin: 5px 0 20px; word-wrap: break-word; }
 .balance-card h4 { color: var(--text-secondary-color); font-weight: 400; text-transform: uppercase; letter-spacing: 1px; }
-.summary { display: flex; border-top: 1px solid var(--border-color); padding-top: 20px; transition: border-color var(--transition-speed); } /* MODIFIKASI */
+.summary { display: flex; border-top: 1px solid var(--border-color); padding-top: 20px; }
 .summary > div { flex: 1; text-align: center; }
-.summary > div:first-of-type { border-right: 1px solid var(--border-color); transition: border-color var(--transition-speed); } /* MODIFIKASI */
+.summary > div:first-of-type { border-right: 1px solid var(--border-color); }
 .summary p { font-size: 0.8rem; color: var(--text-secondary-color); }
 .summary p i { margin-right: 5px; }
 .money { font-size: 1.2rem; font-weight: 600; }
@@ -138,13 +129,12 @@ select {
 #category-filter { max-width: 150px; }
 
 /* --- DAFTAR TRANSAKSI --- */
-.transaction-list { list-style-type: none; padding: 0; } /* MODIFIKASI: reset padding */
+.transaction-list { list-style-type: none; }
 .date-header {
     font-weight: 600;
     color: var(--text-secondary-color);
-    padding: 15px 5px 5px; /* MODIFIKASI: Sesuaikan padding */
+    padding: 15px 0 5px;
     border-bottom: 1px solid var(--border-color);
-    transition: all var(--transition-speed); /* MODIFIKASI */
 }
 .transaction-list li:not(.date-header) {
     background-color: var(--panel-bg-color);
@@ -154,14 +144,21 @@ select {
     margin: 10px 0;
     border-radius: var(--border-radius-sm);
     box-shadow: 0 2px 5px var(--shadow-color);
-    transition: transform 0.2s, box-shadow 0.2s, background-color var(--transition-speed); /* MODIFIKASI */
+    transition: transform 0.2s, box-shadow 0.2s;
     animation: slideIn 0.4s ease-out;
 }
-@keyframes slideIn { from { opacity: 0; transform: translateY(-15px); } to { opacity: 1; transform: translateY(0); } }
-.transaction-list li:hover { transform: translateY(-3px); box-shadow: 0 5px 12px var(--shadow-color); } /* MODIFIKASI: Efek hover lebih jelas */
+@keyframes slideIn {
+  from { opacity: 0; transform: translateY(-15px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.transaction-list li:hover { transform: translateY(-2px); box-shadow: 0 4px 10px var(--shadow-color); }
 .category-icon {
-    font-size: 1.5rem; width: 45px; height: 45px; /* MODIFIKASI: Sedikit lebih besar */
-    border-radius: 50%; display: grid; place-items: center; margin-right: 15px;
+    font-size: 1.5rem;
+    width: 40px; height: 40px;
+    border-radius: 50%;
+    display: grid;
+    place-items: center;
+    margin-right: 15px;
 }
 .income .category-icon { background-color: #2ecc7120; color: var(--success-color); }
 .expense .category-icon { background-color: #e74c3c20; color: var(--danger-color); }
@@ -169,8 +166,6 @@ select {
 .transaction-details span:first-child { font-weight: 600; display: block; }
 .transaction-details span:last-child { font-size: 0.8rem; color: var(--text-secondary-color); }
 .transaction-amount { font-weight: 600; font-size: 1.1rem; text-align: right; }
-.transaction-list .income .transaction-amount { color: var(--income-text-color); }  /* MODIFIKASI */
-.transaction-list .expense .transaction-amount { color: var(--expense-text-color); } /* MODIFIKASI */
 .transaction-actions { display: flex; margin-left: 15px; opacity: 0; transition: opacity 0.3s; }
 .transaction-list li:hover .transaction-actions { opacity: 1; }
 .action-btn { background: none; border: none; cursor: pointer; font-size: 1rem; padding: 5px; color: var(--text-secondary-color); }
@@ -182,24 +177,23 @@ select {
     text-align: center; color: var(--text-secondary-color);
     padding: 50px 20px; background-color: var(--panel-bg-color);
     border-radius: var(--border-radius-md); border: 2px dashed var(--border-color);
-    transition: all var(--transition-speed); /* MODIFIKASI */
 }
 .empty-state i { font-size: 3rem; margin-bottom: 15px; }
 .empty-state p { font-size: 1.2rem; font-weight: 600; color: var(--text-color); }
 
 /* --- FAB (Floating Action Button) --- */
 .fab {
-    position: fixed; bottom: 30px; right: 30px; /* MODIFIKASI: Posisi lebih nyaman */
+    position: fixed;
+    bottom: 20px; right: 20px;
     width: 60px; height: 60px;
     background-color: var(--fab-color);
-    color: white; border: none; border-radius: 50%; font-size: 24px;
+    color: white; border: none; border-radius: 50%;
+    font-size: 24px;
     box-shadow: 0 4px 15px var(--shadow-dark);
     cursor: pointer; display: grid; place-items: center;
     transition: transform 0.2s, background-color var(--transition-speed);
-    z-index: 99; /* MODIFIKASI */
 }
 .fab:hover { transform: scale(1.1) rotate(90deg); }
-.fab:active { transform: scale(1.0) rotate(90deg); } /* MODIFIKASI */
 
 /* --- MODAL --- */
 .modal-container {
@@ -214,9 +208,11 @@ select {
     background-color: var(--panel-bg-color);
     border-radius: var(--border-radius-md);
     box-shadow: 0 5px 20px var(--shadow-dark);
-    padding: 30px; width: 90%; max-width: 450px; position: relative;
+    padding: 30px;
+    width: 90%; max-width: 450px;
+    position: relative;
     transform: translateY(-50px);
-    transition: transform 0.3s ease, background-color var(--transition-speed); /* MODIFIKASI */
+    transition: transform 0.3s ease;
 }
 .modal-container.show .modal-content { transform: translateY(0); }
 .close-modal {
@@ -228,52 +224,17 @@ select {
 .form-control label { display: block; margin-bottom: 5px; font-weight: 600; }
 .form-control input, .form-control select {
     border: 1px solid var(--border-color); background-color: var(--bg-color);
-    color: var(--text-color); border-radius: var(--border-radius-sm); /* MODIFIKASI */
-    display: block; font-size: 16px; padding: 12px; width: 100%;
-    transition: all var(--transition-speed); /* MODIFIKASI */
-}
-.form-control input:focus, .form-control select:focus {
-    outline: none; /* MODIFIKASI */
-    border-color: var(--primary-color); /* MODIFIKASI */
-    box-shadow: 0 0 0 2px color-mix(in srgb, var(--primary-color) 30%, transparent); /* MODIFIKASI */
+    color: var(--text-color); border-radius: 5px; display: block;
+    font-size: 16px; padding: 12px; width: 100%;
 }
 .radio-group { display: flex; gap: 20px; align-items: center; }
 .radio-group label { margin-bottom: 0; cursor: pointer; }
 .btn {
     cursor: pointer; background-color: var(--primary-color);
-    color: #fff; border: 0; border-radius: var(--border-radius-sm); /* MODIFIKASI */
+    color: #fff; border: 0; border-radius: 5px;
     display: block; font-size: 16px; font-weight: 600;
     padding: 12px; margin-top: 20px; width: 100%;
-    transition: background-color 0.3s, transform 0.2s; /* MODIFIKASI */
+    transition: background-color 0.3s;
 }
 .btn:hover { background-color: var(--primary-hover-color); }
-.btn:active { transform: scale(0.98); } /* MODIFIKASI */
 
-/* --- SUMMARY & CHART CONTAINER --- */
-.summary-container {
-    background-color: var(--panel-bg-color);
-    border-radius: var(--border-radius-md);
-    box-shadow: 0 5px 15px var(--shadow-color);
-    overflow: hidden;
-    transition: background-color var(--transition-speed), box-shadow var(--transition-speed); /* MODIFIKASI */
-}
-.view-switcher { display: flex; background-color: var(--bg-color); transition: background-color var(--transition-speed); } /* MODIFIKASI */
-.view-btn {
-    flex: 1; padding: 12px; background: none; border: none; cursor: pointer;
-    font-size: 0.9rem; font-weight: 600; color: var(--text-secondary-color);
-    transition: all var(--transition-speed); border-bottom: 3px solid transparent;
-}
-.view-btn i { margin-right: 8px; }
-.view-btn.active { color: var(--primary-color); border-bottom-color: var(--primary-color); }
-.view-content { padding: 25px; display: none; animation: fadeIn 0.5s; }
-.view-content.active { display: block; }
-@keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } } /* MODIFIKASI */
-
-.chart-card h4 {
-    color: var(--text-secondary-color);
-    font-weight: 400; text-transform: uppercase; letter-spacing: 1px;
-    margin-bottom: 15px; text-align: center;
-}
-.chart-wrapper { position: relative; height: 250px; width: 100%; }
-/* MODIFIKASI: Menambahkan efek hover pada chart, membutuhkan Chart.js v3+ */
-#expense-chart { cursor: pointer; }
